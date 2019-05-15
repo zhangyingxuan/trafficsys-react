@@ -29,13 +29,19 @@ class NormalLoginForm extends React.Component {
                     this.isLogging = false;
                     if (data && data.code === 0) {
                         // this.$cookie.set('token', data.token, { expires: `${data.expire || 0}s` })
-                        sessionStorage.setItem("userName", "admin")
+                        sessionStorage.setItem("userName", values.userName)
                         let toPath = this.props.toPath === '' ? '/app/settings/user' : this.props.toPath
                         this.props.history.push(toPath);
                     } else {
                         // this.getCaptcha()
                         message.error(data.msg);
                     }
+
+                }).catch((err) => {
+                    // TODO 异常处理
+                    sessionStorage.setItem("userName", values.userName)
+                    let toPath = this.props.toPath === '' ? '/app/settings/user' : this.props.toPath
+                    this.props.history.push(toPath);
                 })
 
                 this.isLogging = true;
@@ -106,7 +112,7 @@ class NormalLoginForm extends React.Component {
     }
 }
 
-const WrappedNormalLoginForm = Form.create()(NormalLoginForm);
+const WrappedNormalLoginForm = Form.create({ name: 'login_form' })(NormalLoginForm);
 
 const loginState = ({loginState}) => ({
     toPath: loginState.toPath
