@@ -7,8 +7,12 @@ import {
 
 class RegistrationForm extends React.Component {
 	state = {
+		ready: false,
 		confirmDirty: false,
 		autoCompleteResult: [],
+		fromData: {
+			title: '12412'
+		}
 	};
 
 	handleSubmit = e => {
@@ -22,6 +26,23 @@ class RegistrationForm extends React.Component {
 		});
 	};
 
+	componentWillReceiveProps(nextProps, nextContext) {
+		if(this.state.ready && nextProps.permissionItem && (nextProps.permissionItem.title !== this.props.permissionItem.title)) {
+			this.props.form.setFieldsValue({
+				title: nextProps.permissionItem.title,
+				key: nextProps.permissionItem.key,
+				component: nextProps.permissionItem.component,
+				icon: nextProps.permissionItem.icon,
+			});
+		}
+	}
+
+	componentDidMount() {
+		this.setState({
+			ready: true
+		})
+	}
+
 	compareToFirstPassword = (rule, value, callback) => {
 		const form = this.props.form;
 		if (value && value !== form.getFieldValue('password')) {
@@ -31,7 +52,7 @@ class RegistrationForm extends React.Component {
 		}
 	};
 	render() {
-		const { getFieldDecorator } = this.props.form;
+		const { getFieldDecorator, setFieldsValue } = this.props.form;
 
 		const formItemLayout = {
 			labelCol: {

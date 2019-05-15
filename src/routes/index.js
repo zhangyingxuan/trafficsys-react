@@ -40,6 +40,9 @@ export default class CRouter extends Component {
                                             const queryParams = window.location.hash.match(reg);
                                             // 去除?的参数
                                             const { params } = props.match;
+
+                                            console.log(params)
+
                                             Object.keys(params).forEach(key => {
                                                 params[key] = params[key] && params[key].replace(reg, '');
                                             });

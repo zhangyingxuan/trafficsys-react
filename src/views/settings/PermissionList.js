@@ -5,22 +5,25 @@ import React from 'react';
 import PermissionTree from './components/PermissionTree'
 import PermissionForm from './components/PermissionForm'
 import './PermissionList.scss'
-import { Card, Col, Row } from 'antd';
+import {Card, Col, Row, Tree} from 'antd';
 
 class PermissionList extends React.Component {
 	constructor(props) {
 		super(props);
-		this.handleSelectTreeItem.bind(this)
 		this.state = {
 			permissionList: [],
-			currentChoosePermission: {}
+			currentChoosePermission: {},
+			loading: false
 		};
 	}
 
-	componentDidMount() {
+	componentWillMount() {
+
+		this.setState({ loading: true });
 		// 获取菜单数据
 		setTimeout(() => {
 			this.setState({
+				loading: false,
 				permissionList: [ // 菜单相关路由
 					{ key: '/app/dashboard/index', title: '首页', icon: 'mobile', component: 'Dashboard' },
 					{
@@ -47,23 +50,65 @@ class PermissionList extends React.Component {
 		}, 300)
 	}
 
-	handleSelectTreeItem(treeItem) {
-		console.log(treeItem)
+	componentDidMount() {
+	}
+
+	/**
+	 *  调用网络，刷新权限树
+	 */
+	handleRefreshTree() {
+
+	}
+
+	deepSearchSelectedTreeItem(permissionList, treeItemTitle) {
+		if(permissionList == null || permissionList == undefined){
+			return null
+		}
+
+		for(let i = 0; i < permissionList.length; i++) {
+			let currentPermission = permissionList[i]
+			if(currentPermission.title === treeItemTitle) {
+				return currentPermission
+			}
+			let subPermission = this.deepSearchSelectedTreeItem(currentPermission.subs, treeItemTitle)
+			if(subPermission) {
+				return subPermission
+			}
+		}
+
+		return null
+	}
+
+	/**
+	 *  处理选中树节点操作
+	 * @param treeItemTitle
+	 */
+	handleSelectTreeItem(treeItemTitle) {
+		let permissionList = this.state.permissionList
+		let selectedTreItem = this.deepSearchSelectedTreeItem(permissionList, treeItemTitle)
+
+		this.setState({
+			currentChoosePermission: selectedTreItem
+		})
 	}
 
 	render() {
 		return (
 			<div className="permission-container">
-				<Row gutter={16}>
+				<Row gutter={6}>
 					<Col span={12}>
-						<Card title="Card title" bordered={false}>
+						<Card title="权限树"
+							  loading={this.state.loading}
+							  bordered={false}>
 							<PermissionTree className="permission-tree"
+											loading={this.state.loading}
 											permissionList={this.state.permissionList}
-											onSelectTreeItem={this.handleSelectTreeItem}></PermissionTree>
+											refreshTree={this.handleRefreshTree.bind(this)}
+											onSelectTreeItem={this.handleSelectTreeItem.bind(this)}></PermissionTree>
 						</Card>
 					</Col>
 					<Col span={12}>
-						<Card title="Card title" bordered={false}>
+						<Card title="修改/添加菜单" bordered={false}>
 							<PermissionForm className="permission-form"
 											permissionItem={this.state.currentChoosePermission}></PermissionForm>
 						</Card>

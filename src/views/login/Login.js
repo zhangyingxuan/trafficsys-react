@@ -1,8 +1,10 @@
 import React from 'react'
 import './Login.scss'
-import {Form, Icon, Input, Button, Checkbox} from 'antd';
+import {Form, Icon, Input, Button, Checkbox, message} from 'antd';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux'
+import API from "../../api"
+import {encryptByAES} from '../../utils'
 const FormItem = Form.Item;
 
 class NormalLoginForm extends React.Component {
@@ -15,14 +17,35 @@ class NormalLoginForm extends React.Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
+                let params = {
+                    'username': values.userName,
+                    // 密码AES加密 2018-11-29 09:36:01
+                    'password': encryptByAES(values.password, 'Gyh21C89ee1QDuqG').toString(),
+                    // 'uuid': this.dataForm.uuid,
+                    // 'captcha': this.dataForm.captcha
+                }
+
+                API.common.login(params).then(({data}) => {
+                    this.isLogging = false;
+                    if (data && data.code === 0) {
+                        // this.$cookie.set('token', data.token, { expires: `${data.expire || 0}s` })
+                        sessionStorage.setItem("userName", "admin")
+                        let toPath = this.props.toPath === '' ? '/app/settings/user' : this.props.toPath
+                        this.props.history.push(toPath);
+                    } else {
+                        // this.getCaptcha()
+                        message.error(data.msg);
+                    }
+                })
+
                 this.isLogging = true;
 
-                if (values.userName == "admin" && values.password == "admin") {
-                    this.isLogging = false;
-                    sessionStorage.setItem("userName", "admin")
-                    let toPath = this.props.toPath === '' ? '/app/settings/user' : this.props.toPath
-                    this.props.history.push(toPath);
-                }
+                // if (values.userName == "admin" && values.password == "admin") {
+                //     this.isLogging = false;
+                //     sessionStorage.setItem("userName", "admin")
+                //     let toPath = this.props.toPath === '' ? '/app/settings/user' : this.props.toPath
+                //     this.props.history.push(toPath);
+                // }
             }
         });
     }
