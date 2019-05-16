@@ -3,7 +3,7 @@ import {message} from 'antd';
 import {createHashHistory} from 'history';
 
 const globalCode = {
-    success: 200,
+    success: 0,
     timeout: 401,
     busyCode: 400
 }
@@ -31,13 +31,15 @@ instance.interceptors.request.use(function (config) {
 
 //添加一个响应拦截器
 instance.interceptors.response.use(function (response) {
+    console.log(response)
+
     // 1.成功
-    if (response.data.success && response.data.messageCode === globalCode.success) {
-        return response.data.data;
+    if (response.data && response.data.code === globalCode.success) {
+        return response;
     }
 
     // 2.session过期
-    if (!response.data.success && response.data.messageCode === globalCode.timeout) {
+    if (!response.data && response.data.code === globalCode.timeout) {
         message.error('会话过期，请重新登录');
         createHashHistory().push('/login');
         // 定义一个messagecode在后面会用到
@@ -47,7 +49,7 @@ instance.interceptors.response.use(function (response) {
     }
 
     // 3.11111111 系统异常、网络异常
-    if (response.data.success && response.data.messageCode === globalCode.busyCode) {
+    if (response.data && response.data.code === globalCode.busyCode) {
         message.error(response.data.message);
         return Promise.reject({
             messageCode: 'netError'

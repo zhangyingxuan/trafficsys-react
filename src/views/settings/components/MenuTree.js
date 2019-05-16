@@ -8,7 +8,7 @@ const Search = Input.Search;
 
 const {TreeNode} = Tree;
 
-class PermissionTree extends React.Component {
+class MenuTree extends React.Component {
     constructor(props) {
         super(props);
         this.renderPermissionTreeNode.bind(this)
@@ -26,8 +26,6 @@ class PermissionTree extends React.Component {
      */
     componentWillReceiveProps(nextProps, nextContext) {
         if (nextProps.permissionList && (nextProps.permissionList.length !== this.props.permissionList.length)) {
-
-            console.log("autoExpandParent")
             this.setState({
                 autoExpandParent: true
             })
@@ -87,7 +85,7 @@ class PermissionTree extends React.Component {
     render() {
         return (
             <React.Fragment>
-                {/*<Search style={{ marginBottom: 8 }} placeholder="Search" onChange={this.onChange} />*/}
+                <Search style={{ marginBottom: 8 }} placeholder="Search" onChange={this.onChange} />
                 <Tree
                     showIcon
                     autoExpandParent={this.state.autoExpandParent}
@@ -105,4 +103,4 @@ class PermissionTree extends React.Component {
     }
 }
 
-export default PermissionTree;
+export default MenuTree;

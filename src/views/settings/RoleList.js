@@ -4,6 +4,8 @@
 import React from 'react';
 import {Input, Card, Row, Col, Button, Table, Modal, Tag, Popconfirm, Form} from 'antd';
 import "./RoleList.scss"
+import MenuTree from './components/MenuTree'
+import API from "../../api"
 
 const Search = Input.Search;
 
@@ -22,12 +24,16 @@ class RoleList extends React.Component {
                 key: 'comment',
             },
             {
-                title: 'operation',
+                title: '操作',
                 dataIndex: 'operation',
                 render: (text, record) =>
                     this.state.dataSource.length >= 1 ? (
                         <React.Fragment>
-                            <a style={{marginRight: '10px'}} href="javascript:;" onClick={this.handleAddOrUpdate.bind(this, record)}>编辑</a>
+                            <Button type="primary" onClick={this.showPermissionTree.bind(this, record)}>
+                                分配权限
+                            </Button>
+
+                            <a style={{margin: '0 10px'}} href="javascript:;" onClick={this.showAddOrUpdateModal.bind(this, record)}>编辑</a>
                             <Popconfirm title="确定删除吗？"
                                         cancelText="取消"
                                         okText="保存"
@@ -43,40 +49,51 @@ class RoleList extends React.Component {
             dataSource: [],
             loading: false,
             modalVisible: false,
-            currentItem: {}
+            currentItem: {},
+            permissionList: [],
+            permissionTreeModalVisible: false,
+            currentRole: {}
         };
     }
 
     componentWillMount() {
         this.setState({ loading: true });
-        // TODO 调用网络获取角色列表数据
-        setTimeout(() => {
+        // 获取菜单列表
+        // API.menu.list().then(({data}) => {
+        //     this.setState({
+        //         loading: false,
+        //         permissionList: data.data
+        //     })
+        // }).catch((err) => {
+        //     console.log(err)
+        // })
+
+        // 获取角色列表
+        API.role.list().then(({data}) => {
             this.setState({
                 loading: false,
-                dataSource: [
-                    {
-                        id: '1',
-                        key: '1',
-                        roleName: 'John Brown',
-                        comment: 'comment11'
-                    },
-                    {
-                        id: '2',
-                        key: '2',
-                        roleName: 'Jim Green',
-                        comment: 'comment22'
-                    },
-                    {
-                        id: '3',
-                        key: '3',
-                        roleName: 'Joe Black',
-                        comment: 'comment33'
-                    },
-                ]
+                dataSource: data.data
             })
-        }, 300)
+        }).catch((err) => {
+            console.log(err)
+        })
     }
 
+    /**
+     *  显示权限树弹窗
+     * @param currentRole
+     */
+    showPermissionTree(currentRole) {
+        this.setState({
+            permissionTreeModalVisible: true,
+            currentRole: currentRole
+        })
+    }
+
+    /**
+     *  处理表格删除
+     * @param key
+     */
     handleDelete = key => {
         const dataSource = [...this.state.dataSource];
 
@@ -84,7 +101,11 @@ class RoleList extends React.Component {
         this.setState({dataSource: dataSource.filter(item => item.key !== key)});
     };
 
-    handleAddOrUpdate(currentItem) {
+    /**
+     *
+     * @param currentItem
+     */
+    showAddOrUpdateModal(currentItem) {
         if(currentItem.id) {
             this.props.form.setFieldsValue({...currentItem});
         } else {
@@ -114,6 +135,18 @@ class RoleList extends React.Component {
         });
     };
 
+    /**
+     *  处理 保存分配权限
+     */
+    handleDistributePermissionOk() {
+        // TODO 网络请求，保存分配权限
+    }
+    handleDistributePermissionCancel() {
+        this.setState({
+            permissionTreeModalVisible: false
+        })
+    }
+
     render() {
         let modalTitle = this.state.currentItem.id ?  '修改角色' : "新增角色"
         const formItemLayout = {
@@ -134,7 +167,7 @@ class RoleList extends React.Component {
                         <Search placeholder="角色名称" onSearch={value => console.log(value)} enterButton/>
                         <Button className="role_add"
                                 color="red"
-                                type="primary" onClick={this.handleAddOrUpdate.bind(this, {})}>
+                                type="primary" onClick={this.showAddOrUpdateModal.bind(this, {})}>
                             新增角色
                         </Button>
                         <Modal
@@ -172,6 +205,16 @@ class RoleList extends React.Component {
                 <Table columns={this.columns}
                        loading={this.state.loading}
                        dataSource={this.state.dataSource}/>
+
+                <Modal
+                    title={modalTitle}
+                    visible={this.state.permissionTreeModalVisible}
+                    onOk={this.handleDistributePermissionOk.bind(this)}
+                    cancelText="取消"
+                    okText="保存"
+                    onCancel={this.handleDistributePermissionCancel.bind(this)}>
+                    <MenuTree permissionList={this.state.permissionList}/>
+                </Modal>
             </Card>
         )
     }

@@ -1,16 +1,14 @@
 /**
  * Created by hao.cheng on 2017/4/13.
  */
-import React, { Component } from 'react';
-import { Layout } from 'antd';
-import { withRouter } from 'react-router-dom';
+import React, {Component} from 'react';
+import {Icon, Layout, Menu} from 'antd';
+import {NavLink, withRouter} from 'react-router-dom';
 import routes from '../../routes/config';
-import SiderMenu from './SiderMenu';
-
-const { Sider } = Layout;
+const {Sider} = Layout;
 
 class SiderCustom extends Component {
-    static getDerivedStateFromProps (props, state) {
+    static getDerivedStateFromProps(props, state) {
         if (props.collapsed !== state.collapsed) {
             const state1 = SiderCustom.setMenuOpen(props);
             const state2 = SiderCustom.onCollapse(props.collapsed);
@@ -23,8 +21,9 @@ class SiderCustom extends Component {
         }
         return null;
     }
+
     static setMenuOpen = props => {
-        const { pathname } = props.location;
+        const {pathname} = props.location;
         return {
             openKey: pathname.substr(0, pathname.lastIndexOf('/')),
             selectedKey: pathname
@@ -43,16 +42,18 @@ class SiderCustom extends Component {
         selectedKey: '',
         firstHide: true, // 点击收缩菜单，第一次隐藏展开子菜单，openMenu时恢复
     };
+
     componentDidMount() {
         // this.setMenuOpen(this.props);
         const state = SiderCustom.setMenuOpen(this.props);
         this.setState(state);
     }
+
     menuClick = e => {
         this.setState({
             selectedKey: e.key
         });
-        const { popoverHide } = this.props; // 响应式布局控制小屏幕点击菜单时隐藏菜单操作
+        const {popoverHide} = this.props; // 响应式布局控制小屏幕点击菜单时隐藏菜单操作
         popoverHide && popoverHide();
     };
     openMenu = v => {
@@ -61,25 +62,55 @@ class SiderCustom extends Component {
             firstHide: false,
         })
     };
+
+    createMenu(data) {
+        const childMenuData = data.subs;
+        let childMenu = <div></div>;
+        if (childMenuData && childMenuData.length) {
+            childMenu = childMenuData.map((item) => {
+                return this.createMenu(item);
+            });
+            return <Menu.SubMenu key={data.title} title={
+                <span>
+                    {data.icon && <Icon type={data.icon}/>}
+                    <span className="nav-text">{data.title}</span>
+                </span>
+            }>{childMenu}</Menu.SubMenu>
+        } else {
+            this.props.addMenu({...data});
+            return <Menu.Item key={data.title}>
+                <NavLink to={data.url} onClick={this.props.addTabs}>
+                    {data.icon && <Icon type={data.icon}/>}
+                    <span className="nav-text">{data.title}</span>
+                </NavLink>
+            </Menu.Item>
+        }
+    }
+
     render() {
-        const { selectedKey, openKey, firstHide, collapsed } = this.state;
+        const {selectedKey, openKey, firstHide, collapsed} = this.state;
         return (
             <Sider
                 trigger={null}
                 breakpoint="lg"
                 collapsed={collapsed}
-                style={{ overflowY: 'auto' }}
+                style={{overflowY: 'auto'}}
             >
-                <div className="logo" />
-                <SiderMenu
-                    menus={routes.menus}
-                    onClick={this.menuClick}
-                    mode="inline"
-                    selectedKeys={[selectedKey]}
-                    theme="dark"
-                    openKeys={firstHide ? null : [openKey]}
-                    onOpenChange={this.openMenu}
-                />
+                <div className="logo"/>
+
+                <Menu menus={routes.menus}
+                      onClick={this.menuClick}
+                      mode="inline"
+                      selectedKeys={[selectedKey]}
+                      theme="dark"
+                      openKeys={firstHide ? null : [openKey]}
+                      onOpenChange={this.openMenu}>
+                    {
+                        routes.menus && routes.menus.map(item =>
+                            this.createMenu(item)
+                        )
+                    }
+                </Menu>
                 <style>
                     {`
                     #nprogress .spinner{

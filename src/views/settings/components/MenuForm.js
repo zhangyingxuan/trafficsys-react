@@ -30,7 +30,7 @@ class RegistrationForm extends React.Component {
 		if(this.state.ready && nextProps.permissionItem && (nextProps.permissionItem.title !== this.props.permissionItem.title)) {
 			this.props.form.setFieldsValue({
 				title: nextProps.permissionItem.title,
-				key: nextProps.permissionItem.key,
+				url: nextProps.permissionItem.url,
 				component: nextProps.permissionItem.component,
 				icon: nextProps.permissionItem.icon,
 			});
@@ -90,7 +90,7 @@ class RegistrationForm extends React.Component {
 					})(<Input />)}
 				</Form.Item>
 				<Form.Item label="菜单路径">
-					{getFieldDecorator('key', {
+					{getFieldDecorator('url', {
 						rules: [
 							{
 								required: true,

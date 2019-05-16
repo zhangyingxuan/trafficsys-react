@@ -2,12 +2,13 @@
  * Created by yingxuan.zhang 2019-5-13 10:44:42
  */
 import React from 'react';
-import PermissionTree from './components/PermissionTree'
-import PermissionForm from './components/PermissionForm'
-import './PermissionList.scss'
+import MenuTree from './components/MenuTree'
+import PermissionForm from './components/MenuForm'
+import './MenuList.scss'
 import {Card, Col, Row, Tree} from 'antd';
+import API from "../../api"
 
-class PermissionList extends React.Component {
+class MenuList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -18,36 +19,18 @@ class PermissionList extends React.Component {
 	}
 
 	componentWillMount() {
-
 		this.setState({ loading: true });
-		// 获取菜单数据
-		setTimeout(() => {
+
+		API.menu.list().then(({data}) => {
 			this.setState({
 				loading: false,
-				permissionList: [ // 菜单相关路由
-					{ key: '/app/dashboard/index', title: '首页', icon: 'mobile', component: 'Dashboard' },
-					{
-						key: '/settings', title: '系统设置', icon: 'safety',
-						subs: [
-							{ key: '/app/settings/user', title: '用户管理', component: 'UserList' },
-							{ key: '/app/settings/role', title: '角色管理', component: 'RoleList' },
-							{ key: '/app/settings/permission', title: '权限管理', component: 'PermissionList' },
-							{ key: '/app/settings/routerEnter', title: '路由拦截', component: 'RouterEnter', auth: 'auth/testPage' },
-						],
-					},
-					{
-						key: '/app/extension', title: '功能扩展', icon: 'bars',
-						subs: [
-							{ key: '/app/extension/queryParams', title: '问号形式参数', component: 'QueryParams', query: '?param1=1&param2=2' },
-						],
-					}
-				]
+				permissionList: data.data,
+				currentChoosePermission: data.data && data.data.length > 0
+					? data.data[0] : {}
 			})
-			this.setState({
-				currentChoosePermission: this.permissionList && this.permissionList.length > 0
-					? this.permissionList[0] : {}
-			})
-		}, 300)
+		}).catch((err) => {
+			console.log(err)
+		})
 	}
 
 	componentDidMount() {
@@ -100,11 +83,11 @@ class PermissionList extends React.Component {
 						<Card title="权限树"
 							  loading={this.state.loading}
 							  bordered={false}>
-							<PermissionTree className="permission-tree"
-											loading={this.state.loading}
-											permissionList={this.state.permissionList}
-											refreshTree={this.handleRefreshTree.bind(this)}
-											onSelectTreeItem={this.handleSelectTreeItem.bind(this)}></PermissionTree>
+							<MenuTree className="permission-tree"
+									  loading={this.state.loading}
+									  permissionList={this.state.permissionList}
+									  refreshTree={this.handleRefreshTree.bind(this)}
+									  onSelectTreeItem={this.handleSelectTreeItem.bind(this)}></MenuTree>
 						</Card>
 					</Col>
 					<Col span={12}>
@@ -119,4 +102,4 @@ class PermissionList extends React.Component {
 	}
 }
 
-export default PermissionList;
+export default MenuList;

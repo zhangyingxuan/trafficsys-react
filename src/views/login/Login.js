@@ -1,16 +1,35 @@
 import React from 'react'
 import './Login.scss'
-import {Form, Icon, Input, Button, Checkbox, message} from 'antd';
+import {Form, Icon, Input, Button, Checkbox, message, Row, Col} from 'antd';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux'
 import API from "../../api"
-import {encryptByAES} from '../../utils'
+import {encryptByAES, getUUID} from '../../utils'
+
 const FormItem = Form.Item;
 
 class NormalLoginForm extends React.Component {
     constructor(props) {
         super(props);
         this.isLogging = false;
+        this.state = {
+            captchaImgStream: ''
+        }
+    }
+
+    componentWillMount() {
+        this.fetchCaptcha()
+    }
+
+    fetchCaptcha() {
+        console.log("fetchCaptcha")
+        API.common.captcha(getUUID()).then(({data}) => {
+            this.setState({
+                captchaImgStream: 'data:image/png;base64,' + data.base64Str
+            })
+        }).catch((err) => {
+            console.log(err)
+        })
     }
 
     handleSubmit = (e) => {
@@ -25,6 +44,7 @@ class NormalLoginForm extends React.Component {
                     // 'captcha': this.dataForm.captcha
                 }
 
+                this.isLogging = true;
                 API.common.login(params).then(({data}) => {
                     this.isLogging = false;
                     if (data && data.code === 0) {
@@ -33,26 +53,23 @@ class NormalLoginForm extends React.Component {
                         let toPath = this.props.toPath === '' ? '/app/settings/user' : this.props.toPath
                         this.props.history.push(toPath);
                     } else {
-                        // this.getCaptcha()
+                        this.fetchCaptcha()
                         message.error(data.msg);
                     }
 
                 }).catch((err) => {
                     // TODO 异常处理
-                    sessionStorage.setItem("userName", values.userName)
-                    let toPath = this.props.toPath === '' ? '/app/settings/user' : this.props.toPath
-                    this.props.history.push(toPath);
+                    message.error(err)
                 })
-
-                this.isLogging = true;
-
-                // if (values.userName == "admin" && values.password == "admin") {
-                //     this.isLogging = false;
-                //     sessionStorage.setItem("userName", "admin")
-                //     let toPath = this.props.toPath === '' ? '/app/settings/user' : this.props.toPath
-                //     this.props.history.push(toPath);
-                // }
             }
+        });
+    }
+
+    componentDidMount() {
+        this.props.form.setFieldsValue({
+            userName: 'admin',
+            password: 'admin',
+            captcha: 'admin',
         });
     }
 
@@ -77,7 +94,8 @@ class NormalLoginForm extends React.Component {
                                     {getFieldDecorator('userName', {
                                         rules: [{required: true, message: '请输入用户名!'}],
                                     })(
-                                        <Input size="large" prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                                        <Input size="large"
+                                               prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
                                                placeholder="账号"/>
                                     )}
                                 </FormItem>
@@ -85,10 +103,29 @@ class NormalLoginForm extends React.Component {
                                     {getFieldDecorator('password', {
                                         rules: [{required: true, message: '请输入密码!'}],
                                     })(
-                                        <Input size="large" prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>} type="password"
+                                        <Input size="large"
+                                               prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                                               type="password"
                                                placeholder="密码"/>
                                     )}
                                 </FormItem>
+                                <Row>
+                                    <Col span={14}>
+                                        <FormItem>
+                                            {getFieldDecorator('captcha', {
+                                                rules: [{required: true, message: '请输入验证码!'}],
+                                            })(
+                                                <Input size="large"
+                                                       prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                                                       placeholder="验证码"/>
+                                            )}
+                                        </FormItem>
+                                    </Col>
+                                    <Col span={10}>
+                                        <img id="validateImg" src={this.state.captchaImgStream}
+                                             onClick={this.fetchCaptcha.bind(this)} alt="点击刷新"/>
+                                    </Col>
+                                </Row>
                                 <FormItem>
                                     {getFieldDecorator('remember', {
                                         valuePropName: 'checked',
@@ -101,7 +138,7 @@ class NormalLoginForm extends React.Component {
                                             loading={this.isLogging ? true : false}>
                                         {this.isLogging ? 'Loging' : 'Login'}
                                     </Button>
-                                    Or <a href="">注册账号!</a>
+                                    {/*Or <a href="">注册账号!</a>*/}
                                 </FormItem>
                             </Form>
                         </div>
@@ -112,7 +149,7 @@ class NormalLoginForm extends React.Component {
     }
 }
 
-const WrappedNormalLoginForm = Form.create({ name: 'login_form' })(NormalLoginForm);
+const WrappedNormalLoginForm = Form.create({name: 'login_form'})(NormalLoginForm);
 
 const loginState = ({loginState}) => ({
     toPath: loginState.toPath

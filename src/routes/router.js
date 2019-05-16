@@ -1,9 +1,10 @@
 import React from 'react';
-import { HashRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+// TODO 是否使用hashRouter
+// import { HashRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import NotFound from '../views/noFound/NoFound';
 import Login from '../views/login/Login';
 import MyLayout from '../components/layout';
-
 export default () => (
     <Router>
         <Switch>

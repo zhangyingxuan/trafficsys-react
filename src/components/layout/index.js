@@ -1,26 +1,34 @@
 import React from 'react';
-import Routes from '../../routes';
 import SiderCustom from "./SiderCustom"
 import HeaderCustom from "./HeaderCustom"
 import { ThemePicker } from '../widget';
 import { Tabs, Avatar, Menu, Icon } from 'antd';
+import AllComponents from '../../views';
 
 import 'antd/dist/antd.css';
 import '../../res/styles/index.scss';
 import {Layout} from 'antd';
+import {Route} from "react-router";
+import NoFound from "../../views/noFound/NoFound";
 const { Content, Footer } = Layout;
 const TabPane = Tabs.TabPane;
+const menuList = [];//链式菜单对象，用于动态生成tabs的时候使用
 
 class MyLayout extends React.Component {
-    state = {
-        collapsed: false,
-        title: '',
-        auth: {
-            data: {}
-        },
-        activeKey: 'newTab0',
-        panes: []
-    };
+    constructor(props) {
+        super(props);
+        this.newTabIndex = 1;
+        this.state = {
+            collapsed: false,
+            title: '',
+            auth: {
+                data: {}
+            },
+            activeKey: 'newTab0',
+            panes: []
+        };
+    }
+
     toggle = () => {
         this.setState({
             collapsed: !this.state.collapsed,
@@ -63,28 +71,81 @@ class MyLayout extends React.Component {
         this[action](targetKey);
     }
 
+    remove = (targetKey) => {
+        const panes = this.state.panes.filter(pane => pane.key !== targetKey);
+        let length = panes.length;
+        if(length > 0) {
+            let activeKey = this.state.panes[length - 1].key;
+            this.setState({ panes, activeKey });
+            // 根据当前可选 pane 中选取前后pane
+            // let paneIndex = this.state.panes.length > 1 ?
+            this.props.history.push(this.state.panes[length - 1].url);
+        }
+    }
+
+    handleClickMenuItem = (event) => {
+        console.log(event)
+
+        let url = event.currentTarget.getAttribute('href');
+        let exitPane = this.getExitPane('url', url);
+        if(exitPane != null) {
+            this.setState({activeKey: exitPane.key, isFullScreen: exitPane.isFullScreen});
+            return;
+        }
+        //创建新的tab项
+        let matchMenus = menuList.filter((item) => item.url === url);
+        if(matchMenus.length > 0) {
+            let activeKey = `newTab${this.newTabIndex++}`;
+            this.setState((prevState) => {
+                matchMenus[0].key = activeKey;
+                prevState.panes.push(matchMenus[0]);
+                return {
+                    panes: prevState.panes,
+                    activeKey,
+                    isFullScreen: matchMenus[0].isFullScreen
+                }
+            })
+        }
+    }
+
+    handleAddMenu(menu) {
+        console.log("handleAddMenu")
+        menuList.push(menu)
+    }
+
     render() {
         return (
             <Layout>
-                {<SiderCustom collapsed={this.state.collapsed}/>}
+                <SiderCustom collapsed={this.state.collapsed}
+                             addTabs={this.handleClickMenuItem.bind(this)}
+                             addMenu={this.handleAddMenu.bind(this)}/>
                 <ThemePicker/>
                 <Layout style={{flexDirection: 'column'}}>
                     <HeaderCustom toggle={this.toggle} collapsed={this.state.collapsed} user={this.state.auth.data || {}}/>
                     <Content style={{margin: '0 16px', overflow: 'initial', flex: '1 1 0'}}>
-                        <Routes auth={this.state.auth}/>
+                        {/*<Routes auth={this.state.auth}/>*/}
 
-                        {/*<Tabs*/}
-                            {/*onChange={this.onChange}*/}
-                            {/*activeKey={this.state.activeKey}*/}
-                            {/*type="editable-card"*/}
-                            {/*onEdit={this.onEdit}*/}
-                        {/*>*/}
-                            {/*{this.state.panes.map(pane => (*/}
-                                {/*<TabPane tab={pane.title} key={pane.key} closable={pane.closable}>*/}
-                                    {/*{pane.content}*/}
-                                {/*</TabPane>*/}
-                            {/*))}*/}
-                        {/*</Tabs>*/}
+                        <Tabs
+                            onChange={this.onChange}
+                            hideAdd
+                            activeKey={this.state.activeKey}
+                            type="editable-card"
+                            onEdit={this.onEdit}
+                        >
+                            {this.state.panes.map(
+                                pane => {
+                                    let route = null;
+                                    if(AllComponents.hasOwnProperty(pane.component)) {
+                                        route = <Route path={pane.url} exact component={AllComponents[pane.component]} />;
+                                    } else {
+                                        route = <Route component={NoFound}/>;
+                                    }
+                                    return <TabPane tab={pane.title} key={pane.key}>
+                                        {route}
+                                    </TabPane>
+                                }
+                            )}
+                        </Tabs>
 
 
                     </Content>

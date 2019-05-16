@@ -48,8 +48,7 @@ class HeaderCustom extends Component {
                 />
                 <Menu
                     mode="horizontal"
-                    theme="dark"
-                    style={{ lineHeight: '64px', float: 'right' }}
+                    style={{ lineHeight: '64px', float: 'right', marginRight: '40px' }}
                     onClick={this.menuClick}
                 >
                     <SubMenu title={<span className="avatar">你好 - {this.props.user.userName}<i className="on bottom b-white" /></span>}>
