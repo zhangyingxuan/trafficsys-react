@@ -3,9 +3,6 @@ import { Provider } from 'react-redux'
 import './App.css';
 import store from './store'
 import Router from './routes/router'
-if (process.env.NODE_ENV !== 'production') {
-    require('./mock')
-}
 
 class App extends Component {
     render() {

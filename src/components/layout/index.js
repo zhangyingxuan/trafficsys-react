@@ -8,6 +8,8 @@ import AllComponents from '../../views';
 import 'antd/dist/antd.css';
 import '../../res/styles/index.scss';
 import {Layout} from 'antd';
+import Routes from '../../routes'
+
 import {Route} from "react-router";
 import NoFound from "../../views/noFound/NoFound";
 const { Content, Footer } = Layout;
@@ -84,7 +86,7 @@ class MyLayout extends React.Component {
     }
 
     handleClickMenuItem = (event) => {
-        console.log(event)
+        // console.log(event)
 
         let url = event.currentTarget.getAttribute('href');
         let exitPane = this.getExitPane('url', url);
@@ -109,7 +111,7 @@ class MyLayout extends React.Component {
     }
 
     handleAddMenu(menu) {
-        console.log("handleAddMenu")
+        // console.log("handleAddMenu")
         menuList.push(menu)
     }
 

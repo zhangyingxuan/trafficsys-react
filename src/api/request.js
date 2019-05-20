@@ -31,14 +31,14 @@ instance.interceptors.request.use(function (config) {
 
 //添加一个响应拦截器
 instance.interceptors.response.use(function (response) {
-    console.log(response)
+    // console.log(response)
 
     // 1.成功
     if (response.data && response.data.code === globalCode.success) {
         return response;
     }
 
-    // 2.session过期
+    // 2.session过期handleClickMenuItem
     if (!response.data && response.data.code === globalCode.timeout) {
         message.error('会话过期，请重新登录');
         createHashHistory().push('/login');

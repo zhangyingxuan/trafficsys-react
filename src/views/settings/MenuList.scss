@@ -6,4 +6,26 @@
       height: 100%;
     }
   }
+
+  .ant-tree-title {
+    //display: flex;
+
+    .menu-item-row {
+      width: 100%;
+      display: inline-block;
+      position: relative;
+
+      .menu-item-title {
+        flex: 1;
+      }
+      .menu-item-delete {
+        position: absolute;
+        right: 20px;
+      }
+      .menu-item-add {
+        position: absolute;
+        right: 60px;
+      }
+    }
+  }
 }

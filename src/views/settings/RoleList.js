@@ -2,7 +2,7 @@
  * Created by yingxuan.zhang 2019-5-13 10:44:42
  */
 import React from 'react';
-import {Input, Card, Row, Col, Button, Table, Modal, Tag, Popconfirm, Form} from 'antd';
+import {Input, Card, Row, Col, Button, Table, Modal, Tag, Popconfirm, Form, Pagination} from 'antd';
 import "./RoleList.scss"
 import MenuTree from './components/MenuTree'
 import API from "../../api"
@@ -30,7 +30,7 @@ class RoleList extends React.Component {
                     this.state.dataSource.length >= 1 ? (
                         <React.Fragment>
                             <Button type="primary" onClick={this.showPermissionTree.bind(this, record)}>
-                                分配权限
+                                分配菜单
                             </Button>
 
                             <a style={{margin: '0 10px'}} href="javascript:;" onClick={this.showAddOrUpdateModal.bind(this, record)}>编辑</a>
@@ -46,33 +46,47 @@ class RoleList extends React.Component {
         ];
 
         this.state = {
-            dataSource: [],
+            resultData: {
+                dataSource: [],
+                pageSize: 10,   // 每页条数
+                current: 1, // 当前页数
+                total: 100, // 数据总数
+            },
             loading: false,
             modalVisible: false,
             currentItem: {},
             permissionList: [],
+            currentChooseMenuItem: {},
             permissionTreeModalVisible: false,
-            currentRole: {}
+            currentRole: {},
+            queryParams: {
+                pageNum: 1,
+                pageSize: 8,
+                roleName: ''
+            },
+            defaultCheckedMenuKeys: []
         };
     }
 
     componentWillMount() {
         this.setState({ loading: true });
         // 获取菜单列表
-        // API.menu.list().then(({data}) => {
-        //     this.setState({
-        //         loading: false,
-        //         permissionList: data.data
-        //     })
-        // }).catch((err) => {
-        //     console.log(err)
-        // })
+        API.menu.list().then(({data}) => {
+            this.setState({
+                permissionList: data.data
+            })
+
+            console.log(this.state.permissionList)
+        }).catch((err) => {
+            console.log(err)
+        })
 
         // 获取角色列表
-        API.role.list().then(({data}) => {
+        API.role.list(this.state.queryParams).then(({data}) => {
             this.setState({
                 loading: false,
-                dataSource: data.data
+                resultData: data.data,
+                dataSource: data.data.list
             })
         }).catch((err) => {
             console.log(err)
@@ -80,7 +94,7 @@ class RoleList extends React.Component {
     }
 
     /**
-     *  显示权限树弹窗
+     *  显示菜单树弹窗
      * @param currentRole
      */
     showPermissionTree(currentRole) {
@@ -136,15 +150,33 @@ class RoleList extends React.Component {
     };
 
     /**
-     *  处理 保存分配权限
+     *  处理选中树节点操作
+     * @param treeItemTitle
+     */
+    handleSelectTreeItem(treeItem) {
+        this.setState({
+            currentChooseMenuItem: treeItem
+        })
+    }
+
+    /**
+     *  处理 保存分配菜单
      */
     handleDistributePermissionOk() {
-        // TODO 网络请求，保存分配权限
+        // TODO 网络请求，保存分配菜单
     }
     handleDistributePermissionCancel() {
         this.setState({
             permissionTreeModalVisible: false
         })
+    }
+
+    /**
+     *  处理页码修改
+     */
+    handlePageChange(page, pageSize) {
+        console.log(page)
+        console.log(pageSize)
     }
 
     render() {
@@ -204,16 +236,25 @@ class RoleList extends React.Component {
                 </Row>
                 <Table columns={this.columns}
                        loading={this.state.loading}
+                       pagination={false}
                        dataSource={this.state.dataSource}/>
-
+                <div className="pagination-container">
+                    <Pagination {...this.state.resultData}
+                                onChange={this.handlePageChange.bind(this)}></Pagination>
+                </div>
                 <Modal
-                    title={modalTitle}
+                    title='分配菜单'
                     visible={this.state.permissionTreeModalVisible}
                     onOk={this.handleDistributePermissionOk.bind(this)}
                     cancelText="取消"
-                    okText="保存"
+                    okText="确认"
                     onCancel={this.handleDistributePermissionCancel.bind(this)}>
-                    <MenuTree permissionList={this.state.permissionList}/>
+                    <MenuTree permissionList={this.state.permissionList}
+                              showEditBtn={false}
+                              loading={this.state.loading}
+                              defaultCheckedKeys={this.state.defaultCheckedMenuKeys}
+                              onSelectTreeItem={this.handleSelectTreeItem.bind(this)}
+                              checkable={true}/>
                 </Modal>
             </Card>
         )

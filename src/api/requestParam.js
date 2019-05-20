@@ -13,7 +13,7 @@ import merge from 'lodash/merge'
 export default function (params, requestType = 'post', openDefultParams = true, contentType = 'json') {
   // 默认参数
   var defaults = {
-    't': new Date().getTime()
+    // 't': new Date().getTime()
   }
   params = openDefultParams ? merge(defaults, params) : params
   params = requestType === 'post' ? (contentType === 'json' ? JSON.stringify(params) : qs.stringify(params)) : params

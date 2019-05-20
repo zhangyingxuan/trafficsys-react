@@ -27,7 +27,7 @@ class RegistrationForm extends React.Component {
 	};
 
 	componentWillReceiveProps(nextProps, nextContext) {
-		if(this.state.ready && nextProps.permissionItem && (nextProps.permissionItem.title !== this.props.permissionItem.title)) {
+		if(this.state.ready && nextProps.permissionItem && this.props.permissionItem && (nextProps.permissionItem.title !== this.props.permissionItem.title)) {
 			this.props.form.setFieldsValue({
 				title: nextProps.permissionItem.title,
 				url: nextProps.permissionItem.url,

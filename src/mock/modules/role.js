@@ -9,11 +9,11 @@ export function list() {
         data: {
             'msg': 'success',
             'code': 0,
-            'page': {
-                'totalCount': 2,
+            'data': {
+                'total': 2000,
                 'pageSize': 10,
                 'totalPage': 1,
-                'currPage': 1,
+                'current': 1,
                 'list': [
                     {
                         id: '1',
