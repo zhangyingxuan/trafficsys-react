@@ -124,7 +124,7 @@ class MyLayout extends React.Component {
                 <ThemePicker/>
                 <Layout style={{flexDirection: 'column'}}>
                     <HeaderCustom toggle={this.toggle} collapsed={this.state.collapsed} user={this.state.auth.data || {}}/>
-                    <Content style={{margin: '0 16px', overflow: 'initial', flex: '1 1 0'}}>
+                    <Content style={{overflow: 'initial', flex: '1 1 0'}}>
                         {/*<Routes auth={this.state.auth}/>*/}
 
                         <Tabs

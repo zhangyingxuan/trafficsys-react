@@ -97,6 +97,12 @@
 
 .ant-layout-content {
   min-height: auto;
+  background-color: #ffffff;
+}
+
+.ant-menu-horizontal > .ant-menu-item,
+.ant-menu-horizontal > .ant-menu-submenu{
+  border-bottom: 2px solid #1890ff;
 }
 
 //美化webkit内核滚动条

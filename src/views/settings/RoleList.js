@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import {Input, Card, Row, Col, Button, Table, Modal, Tag, Popconfirm, Form, Pagination} from 'antd';
-import "./RoleList.scss"
+import "./setttings.scss"
 import MenuTree from './components/MenuTree'
 import API from "../../api"
 
@@ -33,7 +33,8 @@ class RoleList extends React.Component {
                                 分配菜单
                             </Button>
 
-                            <a style={{margin: '0 10px'}} href="javascript:;" onClick={this.showAddOrUpdateModal.bind(this, record)}>编辑</a>
+                            <a style={{margin: '0 10px'}} href="javascript:;"
+                               onClick={this.showAddOrUpdateModal.bind(this, record)}>编辑</a>
                             <Popconfirm title="确定删除吗？"
                                         cancelText="取消"
                                         okText="保存"
@@ -60,37 +61,27 @@ class RoleList extends React.Component {
             permissionTreeModalVisible: false,
             currentRole: {},
             queryParams: {
-                pageNum: 1,
+                current: 1,
                 pageSize: 8,
-                roleName: ''
             },
-            defaultCheckedMenuKeys: []
+            queryStr: '',
+            checkedKeys: [3,4]
         };
     }
 
     componentWillMount() {
-        this.setState({ loading: true });
+        this.setState({loading: true});
         // 获取菜单列表
         API.menu.list().then(({data}) => {
             this.setState({
                 permissionList: data.data
             })
-
-            console.log(this.state.permissionList)
         }).catch((err) => {
             console.log(err)
         })
 
         // 获取角色列表
-        API.role.list(this.state.queryParams).then(({data}) => {
-            this.setState({
-                loading: false,
-                resultData: data.data,
-                dataSource: data.data.list
-            })
-        }).catch((err) => {
-            console.log(err)
-        })
+        this.fetchRoleList(this.state.queryStr, this.state.queryParams.current, this.state.queryParams.pageSize)
     }
 
     /**
@@ -120,7 +111,7 @@ class RoleList extends React.Component {
      * @param currentItem
      */
     showAddOrUpdateModal(currentItem) {
-        if(currentItem.id) {
+        if (currentItem.id) {
             this.props.form.setFieldsValue({...currentItem});
         } else {
             this.props.form.setFieldsValue({
@@ -160,11 +151,23 @@ class RoleList extends React.Component {
     }
 
     /**
+     *  勾选框点击时，更新受控 勾选项
+     * @param checkedKeys
+     */
+    handleCheckTreeItem(checkedKeys) {
+        console.log(checkedKeys)
+        this.setState({
+            checkedKeys: checkedKeys
+        })
+    }
+
+    /**
      *  处理 保存分配菜单
      */
     handleDistributePermissionOk() {
         // TODO 网络请求，保存分配菜单
     }
+
     handleDistributePermissionCancel() {
         this.setState({
             permissionTreeModalVisible: false
@@ -175,29 +178,55 @@ class RoleList extends React.Component {
      *  处理页码修改
      */
     handlePageChange(page, pageSize) {
-        console.log(page)
-        console.log(pageSize)
+        this.fetchRoleList(this.state.queryStr, page, pageSize)
+    }
+
+    onSearchStrChange(e) {
+        this.setState({
+            queryStr: e.target.value
+        })
+    }
+
+    handleSearch(searchValue, e) {
+        this.fetchRoleList(searchValue, this.state.queryParams.current, this.state.queryParams.pageSize)
+    }
+
+    fetchRoleList(searchValue, current, pageSize) {
+        this.setState({loading: true})
+        API.role.list({searchParams: searchValue, current, pageSize}).then(({data}) => {
+            this.setState({
+                loading: false,
+                queryParams: data.data,
+                resultData: data.data,
+                dataSource: data.data.list
+            })
+        }).catch((err) => {
+            console.log(err)
+        })
     }
 
     render() {
-        let modalTitle = this.state.currentItem.id ?  '修改角色' : "新增角色"
+        let modalTitle = this.state.currentItem.id ? '修改角色' : "新增角色"
         const formItemLayout = {
             labelCol: {
-                xs: { span: 24 },
-                sm: { span: 8 },
+                xs: {span: 24},
+                sm: {span: 8},
             },
             wrapperCol: {
-                xs: { span: 24 },
-                sm: { span: 16 },
+                xs: {span: 24},
+                sm: {span: 16},
             },
         };
-        const { getFieldDecorator } = this.props.form;
+        const {getFieldDecorator} = this.props.form;
         return (
             <Card bordered={false} className="role_card">
                 <Row>
                     <Col span={24}>
-                        <Search placeholder="角色名称" onSearch={value => console.log(value)} enterButton/>
-                        <Button className="role_add"
+                        <Search placeholder="角色名称"
+                                onChange={this.onSearchStrChange.bind(this)}
+                                onSearch={this.handleSearch.bind(this)}
+                                enterButton/>
+                        <Button className="add_button"
                                 color="red"
                                 type="primary" onClick={this.showAddOrUpdateModal.bind(this, {})}>
                             新增角色
@@ -218,7 +247,7 @@ class RoleList extends React.Component {
                                                 message: '请输入角色名称！',
                                             }
                                         ],
-                                    })(<Input />)}
+                                    })(<Input/>)}
                                 </Form.Item>
                                 <Form.Item label="备注">
                                     {getFieldDecorator('comment', {
@@ -228,7 +257,7 @@ class RoleList extends React.Component {
                                                 message: '请输入备注！',
                                             }
                                         ],
-                                    })(<Input />)}
+                                    })(<Input/>)}
                                 </Form.Item>
                             </Form>
                         </Modal>
@@ -252,13 +281,15 @@ class RoleList extends React.Component {
                     <MenuTree permissionList={this.state.permissionList}
                               showEditBtn={false}
                               loading={this.state.loading}
-                              defaultCheckedKeys={this.state.defaultCheckedMenuKeys}
+                              checkedKeys={this.state.checkedKeys}
                               onSelectTreeItem={this.handleSelectTreeItem.bind(this)}
+                              onCheckTreeItem={this.handleCheckTreeItem.bind(this)}
                               checkable={true}/>
                 </Modal>
             </Card>
         )
     }
 }
-const WrappedRoleListForm = Form.create({ name: 'roleList_form' })(RoleList);
+
+const WrappedRoleListForm = Form.create({name: 'roleList_form'})(RoleList);
 export default WrappedRoleListForm;

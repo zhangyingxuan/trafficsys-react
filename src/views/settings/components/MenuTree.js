@@ -14,8 +14,7 @@ class MenuTree extends React.Component {
         this.renderPermissionTreeNode.bind(this)
         this.state = {
             autoExpandParent: false,
-            searchValue: "",
-            expandedKeys: []
+            searchValue: ""
         };
     }
 
@@ -64,7 +63,7 @@ class MenuTree extends React.Component {
                     let titleSubNode = <span className="menu-item-row"><span className="menu-item-title">{permissionSubItem.title}</span>{deleteNode}</span>
                     // icon={<Icon type={permissionItem.icon}/>}
                     return <TreeNode title={titleSubNode}
-                                     key={permissionSubItem.title}/>
+                                     key={permissionSubItem.id}/>
                 })
             }
 
@@ -75,7 +74,7 @@ class MenuTree extends React.Component {
             return (
                 <TreeNode icon={<Icon type={permissionItem.icon}/>}
                           title={titleNode}
-                          key={permissionItem.title}>
+                          key={permissionItem.id}>
                     {ChildList}
                 </TreeNode>
             )
@@ -113,7 +112,7 @@ class MenuTree extends React.Component {
     }
 
     handleCheckTreeItem = (checkedKeys, info) => {
-        console.log('onCheck', checkedKeys, info);
+        this.props.onCheckTreeItem(checkedKeys)
     };
 
     render() {
@@ -122,10 +121,12 @@ class MenuTree extends React.Component {
                 <Tree
                     showIcon
                     checkable={this.props.checkable}
+                    // checkStrictly
                     autoExpandParent={this.state.autoExpandParent}
                     defaultExpandAll
                     blockNode
                     draggable
+                    checkedKeys={this.props.checkedKeys}
                     onSelect={this.handleSelectTreeItem.bind(this)}
                     onCheck={this.handleCheckTreeItem.bind(this)}
                     switcherIcon={<Icon type="down"/>}>

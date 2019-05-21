@@ -21,37 +21,10 @@ export function list () {
   })
 }
 
-// 获取上级菜单
-export function select () {
-  return request({
-    url: requestUrl('/menu/select'),
-    method: 'get',
-    params: requestParam({}, 'get')
-  })
-}
-
-// 获取菜单信息
-export function info (id) {
-  return request({
-    url: requestUrl('/menu/info' + (isInteger(id) ? `/${id}` : '')),
-    method: 'get',
-    params: requestParam({}, 'get')
-  })
-}
-
 // 添加菜单
-export function add (params) {
+export function addOrUpdate (params) {
   return request({
-    url: requestUrl('/sys/menu/save'),
-    method: 'post',
-    data: requestParam(params)
-  })
-}
-
-// 修改菜单
-export function update (params) {
-  return request({
-    url: requestUrl('/sys/menu/update'),
+    url: requestUrl('/menu/save'),
     method: 'post',
     data: requestParam(params)
   })
@@ -60,7 +33,7 @@ export function update (params) {
 // 删除菜单
 export function del (id) {
   return request({
-    url: requestUrl('/sys/menu/delete' + (isInteger(id) ? `/${id}` : '')),
+    url: requestUrl('/menu/delete' + (isInteger(id) ? `/${id}` : '')),
     method: 'post',
     data: requestParam()
   })

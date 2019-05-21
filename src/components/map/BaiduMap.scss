@@ -1,0 +1,14 @@
+.baidu_map_container {
+  width: 100%;
+  height: 100%;
+  min-width: 600px;
+  min-height: 600px;
+
+
+  .BMap_cpyCtrl,
+  .BMap_noprint,
+  .anchorBL{
+    display: none;
+  }
+}
+

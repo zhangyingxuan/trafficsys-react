@@ -1,7 +1,8 @@
 import isInteger from 'lodash/isInteger'
 
 // 获取角色列表
-export function list() {
+export function list(params) {
+    console.log(params)
     return {
         // isOpen: false,
         url: '/role/list',
@@ -13,24 +14,27 @@ export function list() {
                 'total': 2000,
                 'pageSize': 10,
                 'totalPage': 1,
-                'current': 1,
+                'current': params ? params.current++ : 1,
                 'list': [
                     {
                         id: '1',
                         key: '1',
                         roleName: 'John Brown',
+                        menus: [1,2],
                         comment: 'comment11'
                     },
                     {
                         id: '2',
                         key: '2',
                         roleName: 'Jim Green',
+                        menus: [3,4],
                         comment: 'comment22'
                     },
                     {
                         id: '3',
                         key: '3',
                         roleName: 'Joe Black',
+                        menus: [1,5],
                         comment: 'comment33'
                     }
                 ]
@@ -40,32 +44,15 @@ export function list() {
 }
 
 // 获取角色列表, 根据当前用户
-export function select() {
+export function roleMenuList(params) {
     return {
         isOpen: false,
-        url: '/sys/role/select',
-        type: 'get',
-        data: {}
-    }
-}
-
-// 获取角色信息
-export function info(id) {
-    return {
-        // isOpen: false,
-        url: '/sys/role/info' + (isInteger(id) ? `/${id}` : ''),
+        url: '/role/roleMenuList',
         type: 'get',
         data: {
             'msg': 'success',
             'code': 0,
-            'role': {
-                'roleId': 3,
-                'roleName': '系统管理员',
-                'remark': '系统管理员',
-                'createUserId': 1,
-                'menuIdList': [1, 2, 15, 16, 17, 18, 3, 19, 20, 21, 22, 4, 23, 24, 25, 26, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 27, 29, 30, 31, -666666],
-                'createTime': '2018-03-11 17:03:29'
-            }
+            'data': "1,2"
         }
     }
 }
