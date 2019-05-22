@@ -3,13 +3,13 @@ import {Popconfirm} from "antd";
 import './BaiduMap.scss'
 
 
-const currentCity = '重庆大足'
 class BaiduMap extends Component {
 
     constructor(props) {
         super(props)
-        const map = {}
-
+        this.map = {}
+        this.currentCity = '重庆大足'
+        this.currentCityPly = null
         this.state = {
             //当前zoom级别
             current_zoom: 5,
@@ -30,7 +30,6 @@ class BaiduMap extends Component {
 
             minLevel: 5,
             maxLevel: 16,
-            currentCityPly: null,
             currentStatusPly: [],
             currentMapType: 'lines'
         }
@@ -65,7 +64,7 @@ class BaiduMap extends Component {
         let styleType = ['normal', 'light', 'dark', 'redalert', 'googlelite', 'grassgreen', 'midnight', 'grayscale', 'hardedge']
         this.setMapStyleByType(styleType[1])
         // 获取城市边界
-        this.getBoundary(currentCity)
+        this.getBoundary(this.currentCity)
     }
 
     /**
@@ -73,12 +72,11 @@ class BaiduMap extends Component {
      */
     getBoundary(name) {
         let self = this
-        var bdary = new window.BMap.Boundary();
+        let bdary = new window.BMap.Boundary();
         bdary.get(name, function (rs) {
-            console.log(name)
             self.clearCurrentBoundCity()
-            var count = rs.boundaries.length; //行政区域的点有多少个
-            for (var i = 0; i < count; i++) {
+            let count = rs.boundaries.length; //行政区域的点有多少个
+            for (let i = 0; i < count; i++) {
                 self.currentCityPly = new window.BMap.Polygon(rs.boundaries[i],
                     {
                         strokeWeight: 2, //设置多边形边线线粗
@@ -435,7 +433,7 @@ class BaiduMap extends Component {
         this.resetCityCenterPoint()
         if(this.currentMapType !== 'point') {
             this.currentMapType = 'point'
-            this.setMapStyleCity()
+            // this.setMapStyleCity()
             // 获取城市边界
             this.getBoundary(this.currentCity)
             // this.map.enableDragging();
@@ -445,16 +443,16 @@ class BaiduMap extends Component {
 
         let self = this
 
-        var opts = {
+        let opts = {
             width : 250,     // 信息窗口宽度
             height: 80,     // 信息窗口高度
             title : (data_info.type =='rfid' ? 'RFID' : '抓拍设备') + '状态[' + data_info.status + ']' , // 信息窗口标题
             enableMessage:true//设置允许信息窗发送短息
         };
 
-        for(var i=0;i<data_info.items.length;i++){
-            var marker = new window.BMap.Marker(new window.BMap.Point(data_info.items[i].lng,data_info.items[i].lat));  // 创建标注
-            var content = data_info.items[i].name;
+        for(let i=0;i<data_info.items.length;i++){
+            let marker = new window.BMap.Marker(new window.BMap.Point(data_info.items[i].lng,data_info.items[i].lat));  // 创建标注
+            let content = data_info.items[i].name;
             self.map.addOverlay(marker);               // 将标注添加到地图中
             self.currentStatusPly.push(marker)
             addClickHandler(content,marker);
@@ -465,9 +463,9 @@ class BaiduMap extends Component {
             );
         }
         function openInfo(content,e){
-            var p = e.target;
-            var point = new window.BMap.Point(p.getPosition().lng, p.getPosition().lat);
-            var infoWindow = new window.BMap.InfoWindow(content,opts);  // 创建信息窗口对象
+            let p = e.target;
+            let point = new window.BMap.Point(p.getPosition().lng, p.getPosition().lat);
+            let infoWindow = new window.BMap.InfoWindow(content,opts);  // 创建信息窗口对象
             self.map.openInfoWindow(infoWindow,point); //开启信息窗口
         }
     }

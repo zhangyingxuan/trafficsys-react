@@ -7,7 +7,7 @@ export function login() {
         url: '/login',
         type: 'post',
         data: {
-            "code": "200",
+            "code": 0,
             "msg": "success",
             "data": {
                 "menu": [{

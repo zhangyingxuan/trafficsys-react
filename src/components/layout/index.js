@@ -9,12 +9,14 @@ import 'antd/dist/antd.css';
 import '../../res/styles/index.scss';
 import {Layout} from 'antd';
 import Routes from '../../routes'
+import API from "../../api"
+import routesConfig from '../../routes/config';
 
 import {Route} from "react-router";
 import NoFound from "../../views/noFound/NoFound";
 const { Content, Footer } = Layout;
 const TabPane = Tabs.TabPane;
-const menuList = [];//链式菜单对象，用于动态生成tabs的时候使用
+let menuList = [];//链式菜单对象，用于动态生成tabs的时候使用
 
 class MyLayout extends React.Component {
     constructor(props) {
@@ -22,12 +24,14 @@ class MyLayout extends React.Component {
         this.newTabIndex = 1;
         this.state = {
             collapsed: false,
-            title: '',
             auth: {
-                data: {}
+                user: {}
             },
             activeKey: 'newTab0',
-            panes: []
+            menus: [],
+            panes: [],
+            pageRoutes: [],
+            currentPath: ''
         };
     }
 
@@ -39,48 +43,74 @@ class MyLayout extends React.Component {
 
     componentWillMount() {
         // 线上调用，getUser 接口
-
-        setTimeout(() => {
+        API.user.info().then(({data}) => {
             this.setState({
-                auth: {
-                    data: {
-                        userName: "admin"
-                    }
+                auth: data,
+                menus: routesConfig.menus
+            })
+
+            // 组装menuList数据
+            menuList = []
+            this.state.menus.forEach(menu => {
+                if(menu.subs && menu.subs.length > 0) {
+                    menuList.push(...menu.subs)
+                } else {
+                    menuList.push(menu)
                 }
             })
-        }, 300)
+
+            // 更新当前展示的pane
+            this.updateCurrentPane(this.props.history.location.pathname)
+        }).catch((err) => {
+            console.log(err)
+        })
     }
 
-    test =(pathname) =>{
-        // let _this = this;
-        // //menuConfig是菜单的配置文件
-        // for(let i=0;i<menuConfig.length;i++){
-        //     if(menuConfig[i].children){
-        //         let child = menuConfig[i].children;
-        //         for(let j=0;j<child.length;j++){
-        //             if(child[j].key===pathname){
-        //                 //调用header子组件方法，改变title
-        //                 _this.refs.header.updateCurrentTitle(child[j].title);
-        //                 return;
-        //             }
-        //         }
-        //     }else{
-        //         let item = menuConfig[i];
-        //         if(item.key===pathname){
-        //             //调用header子组件方法，改变title
-        //             _this.refs.header.updateCurrentTitle(item.title);
-        //             return;
-        //         }
-        //     }
-        // }
+    findRoutesByPath(pathname) {
+        let routes = []
+
+        for(let i = 0; i < this.state.menus.length; i++) {
+            let menu = { ...this.state.menus[i] }
+            if(menu.url === pathname) {
+                routes.push({
+                    path: menu.url,
+                    breadcrumbName: menu.title
+                })
+                break
+            }
+
+            if(menu.subs && menu.subs.length > 0) {
+                for(let j = 0; j < menu.subs.length; j++) {
+                    let subMenu = menu.subs[j]
+                    if(subMenu.url === pathname) {
+                        routes.push({
+                            path: menu.url,
+                            breadcrumbName: menu.title
+                        })
+                        routes.push({
+                            path: subMenu.url,
+                            breadcrumbName: subMenu.title
+                        })
+                        break
+                    }
+                }
+            }
+        }
+
+        console.log(routes)
+        return routes
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        //test方法是父组件方法
-        //global.constants.history是上一步定义的全局变量
-        this.test(this.props.history.location.pathname);
-    }
+    componentDidMount() {
+        this.props.history.listen(route => {
+            console.log(route)
 
+            let routes = this.findRoutesByPath(route.pathname)
+            this.setState({
+                pageRoutes: { routes: routes }
+            })
+        })
+    }
 
     onChange = (activeKey) => {
         let exitPane = this.getExitPane('key', activeKey);
@@ -114,8 +144,11 @@ class MyLayout extends React.Component {
 
     handleClickMenuItem = (event) => {
         // console.log(event)
-
         let url = event.currentTarget.getAttribute('href');
+        this.updateCurrentPane(url)
+    }
+
+    updateCurrentPane(url) {
         let exitPane = this.getExitPane('url', url);
         if(exitPane != null) {
             this.setState({activeKey: exitPane.key, isFullScreen: exitPane.isFullScreen});
@@ -137,20 +170,18 @@ class MyLayout extends React.Component {
         }
     }
 
-    handleAddMenu(menu) {
-        // console.log("handleAddMenu")
-        menuList.push(menu)
-    }
-
     render() {
         return (
             <Layout>
                 <SiderCustom collapsed={this.state.collapsed}
-                             addTabs={this.handleClickMenuItem.bind(this)}
-                             addMenu={this.handleAddMenu.bind(this)}/>
+                             menus={this.state.menus}
+                             addTabs={this.handleClickMenuItem.bind(this)}/>
                 <ThemePicker/>
                 <Layout style={{flexDirection: 'column'}}>
-                    <HeaderCustom toggle={this.toggle} collapsed={this.state.collapsed} user={this.state.auth.data || {}}/>
+                    <HeaderCustom toggle={this.toggle}
+                                  pageRoutes={this.state.pageRoutes}
+                                  collapsed={this.state.collapsed}
+                                  user={this.state.auth.user || {}}/>
                     <Content style={{overflow: 'initial', flex: '1 1 0'}}>
                         {/*<Routes auth={this.state.auth}/>*/}
 

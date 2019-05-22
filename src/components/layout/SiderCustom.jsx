@@ -4,7 +4,6 @@
 import React, {Component} from 'react';
 import {Icon, Layout, Menu} from 'antd';
 import {NavLink, withRouter} from 'react-router-dom';
-import routes from '../../routes/config';
 const {Sider} = Layout;
 
 class SiderCustom extends Component {
@@ -77,7 +76,6 @@ class SiderCustom extends Component {
                 </span>
             }>{childMenu}</Menu.SubMenu>
         } else {
-            this.props.addMenu({...data});
             return <Menu.Item key={data.title}>
                 <NavLink to={data.url} onClick={this.props.addTabs}>
                     {data.icon && <Icon type={data.icon}/>}
@@ -98,7 +96,7 @@ class SiderCustom extends Component {
             >
                 <div className="logo"/>
 
-                <Menu menus={routes.menus}
+                <Menu menus={this.props.menus}
                       onClick={this.menuClick}
                       mode="inline"
                       selectedKeys={[selectedKey]}
@@ -106,7 +104,7 @@ class SiderCustom extends Component {
                       openKeys={firstHide ? null : [openKey]}
                       onOpenChange={this.openMenu}>
                     {
-                        routes.menus && routes.menus.map(item =>
+                        this.props.menus && this.props.menus.map(item =>
                             this.createMenu(item)
                         )
                     }

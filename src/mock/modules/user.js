@@ -124,6 +124,7 @@ export function info() {
             'code': 0,
             'user': {
                 'userId': 1,
+                'userName': 'admin',
                 'name': 'admin',
                 'password': '9ec9750e709431dad22365cabc5c625482e574c74adaebba7dd02f1129e4ce1d',
                 'salt': 'YzcmCZNvbXocrsz9dm8e',
