@@ -12,6 +12,7 @@
 
   .ant-layout-header {
     background-color: #fff;
+    padding: 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .08);
   }
 
@@ -47,7 +48,7 @@
   }
 
   .header__trigger {
-    color: #ffffff;
+    color: #000;
   }
 
   .ant-layout-sider-collapsed {
@@ -98,6 +99,10 @@
 .ant-layout-content {
   min-height: auto;
   background-color: #ffffff;
+}
+
+.ant-tabs-bar {
+  margin: 0;
 }
 
 .ant-menu-horizontal > .ant-menu-item,

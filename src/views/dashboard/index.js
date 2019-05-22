@@ -3,11 +3,18 @@ import BaiduMap from '../../components/map/BaiduMap'
 //首先引入组件
 import echarts from 'echarts/lib/echarts';
 import 'echarts/lib/chart/bar'
+import {Card} from "antd";
 
 class DashBoard extends React.Component {
     componentDidMount() {
+        let echartEle = document.getElementById('main')
+        let layoutEle = document.getElementById('ant-layout-sider')
+        let cardEle = document.getElementById("dashboard_card")
+        echartEle.style.width = cardEle.style.width
+        echartEle.style.height = '300px'
+
         // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('main'));
+        let myChart = echarts.init(echartEle);
         // 绘制图表
         myChart.setOption({
             title: { text: 'ECharts 入门示例' },
@@ -31,13 +38,10 @@ class DashBoard extends React.Component {
 
     render() {
         return (
-            <div className="dashboard-container">
-                dashboard
-                <BaiduMap>
-
-                </BaiduMap>
+            <Card bordered={false} id="dashboard_card" className="dashboard_card">
+                <BaiduMap></BaiduMap>
                 <div id="main" style={{ width: 400, height: 400 }}></div>
-            </div>
+            </Card>
         );
     }
 }

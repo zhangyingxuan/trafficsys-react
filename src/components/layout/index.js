@@ -2,7 +2,7 @@ import React from 'react';
 import SiderCustom from "./SiderCustom"
 import HeaderCustom from "./HeaderCustom"
 import { ThemePicker } from '../widget';
-import { Tabs, Avatar, Menu, Icon } from 'antd';
+import { Tabs } from 'antd';
 import AllComponents from '../../views';
 
 import 'antd/dist/antd.css';
@@ -51,7 +51,34 @@ class MyLayout extends React.Component {
         }, 300)
     }
 
-    componentDidMount() {
+    test =(pathname) =>{
+        // let _this = this;
+        // //menuConfig是菜单的配置文件
+        // for(let i=0;i<menuConfig.length;i++){
+        //     if(menuConfig[i].children){
+        //         let child = menuConfig[i].children;
+        //         for(let j=0;j<child.length;j++){
+        //             if(child[j].key===pathname){
+        //                 //调用header子组件方法，改变title
+        //                 _this.refs.header.updateCurrentTitle(child[j].title);
+        //                 return;
+        //             }
+        //         }
+        //     }else{
+        //         let item = menuConfig[i];
+        //         if(item.key===pathname){
+        //             //调用header子组件方法，改变title
+        //             _this.refs.header.updateCurrentTitle(item.title);
+        //             return;
+        //         }
+        //     }
+        // }
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        //test方法是父组件方法
+        //global.constants.history是上一步定义的全局变量
+        this.test(this.props.history.location.pathname);
     }
 
 
