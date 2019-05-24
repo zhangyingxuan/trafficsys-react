@@ -10,13 +10,16 @@ import '../../res/styles/index.scss';
 import {Layout} from 'antd';
 import Routes from '../../routes'
 import API from "../../api"
-import routesConfig from '../../routes/config';
 
 import {Route} from "react-router";
 import NoFound from "../../views/noFound/NoFound";
 const { Content, Footer } = Layout;
 const TabPane = Tabs.TabPane;
-let menuList = [];//链式菜单对象，用于动态生成tabs的时候使用
+const noAuthMenus = [{ id: 0, url: '/app/personalCenter', title: '个人设置', component: 'PersonalCenter' }]
+// 默认展示的路由；链式菜单对象，用于动态生成tabs的时候使用
+let canAccessMenus = [
+    ...noAuthMenus
+];
 
 class MyLayout extends React.Component {
     constructor(props) {
@@ -24,10 +27,9 @@ class MyLayout extends React.Component {
         this.newTabIndex = 1;
         this.state = {
             collapsed: false,
-            auth: {
-                user: {}
-            },
+            user: {},
             activeKey: 'newTab0',
+            // 左侧菜单
             menus: [],
             panes: [],
             pageRoutes: [],
@@ -35,27 +37,21 @@ class MyLayout extends React.Component {
         };
     }
 
-    toggle = () => {
-        this.setState({
-            collapsed: !this.state.collapsed,
-        });
-    };
-
     componentWillMount() {
         // 线上调用，getUser 接口
         API.user.info().then(({data}) => {
             this.setState({
-                auth: data,
-                menus: routesConfig.menus
+                user: data.user,
+                menus: data.menus
             })
 
-            // 组装menuList数据
-            menuList = []
-            this.state.menus.forEach(menu => {
+            // 组装canAccessMenus数据
+            // canAccessMenus = []
+            data.menus.forEach(menu => {
                 if(menu.subs && menu.subs.length > 0) {
-                    menuList.push(...menu.subs)
+                    canAccessMenus.push(...menu.subs)
                 } else {
-                    menuList.push(menu)
+                    canAccessMenus.push(menu)
                 }
             })
 
@@ -66,11 +62,27 @@ class MyLayout extends React.Component {
         })
     }
 
+    componentDidMount() {
+        this.props.history.listen(route => {
+            let routes = this.findRoutesByPath(route.pathname)
+
+            // 更新当前展示的pane
+            this.updateCurrentPane(route.pathname)
+            this.setState({
+                pageRoutes: { routes: routes }
+            })
+        })
+    }
+
+    /**
+     *  通过路径寻找路由
+     */
     findRoutesByPath(pathname) {
         let routes = []
+        let menuList = [...this.state.menus, ...noAuthMenus]
 
-        for(let i = 0; i < this.state.menus.length; i++) {
-            let menu = { ...this.state.menus[i] }
+        for(let i = 0; i < menuList.length; i++) {
+            let menu = { ...menuList[i] }
             if(menu.url === pathname) {
                 routes.push({
                     path: menu.url,
@@ -101,16 +113,11 @@ class MyLayout extends React.Component {
         return routes
     }
 
-    componentDidMount() {
-        this.props.history.listen(route => {
-            console.log(route)
-
-            let routes = this.findRoutesByPath(route.pathname)
-            this.setState({
-                pageRoutes: { routes: routes }
-            })
-        })
-    }
+    toggle = () => {
+        this.setState({
+            collapsed: !this.state.collapsed,
+        });
+    };
 
     onChange = (activeKey) => {
         let exitPane = this.getExitPane('key', activeKey);
@@ -144,8 +151,8 @@ class MyLayout extends React.Component {
 
     handleClickMenuItem = (event) => {
         // console.log(event)
-        let url = event.currentTarget.getAttribute('href');
-        this.updateCurrentPane(url)
+        // let url = event.currentTarget.getAttribute('href');
+        // this.updateCurrentPane(url)
     }
 
     updateCurrentPane(url) {
@@ -155,7 +162,7 @@ class MyLayout extends React.Component {
             return;
         }
         //创建新的tab项
-        let matchMenus = menuList.filter((item) => item.url === url);
+        let matchMenus = canAccessMenus.filter((item) => item.url === url);
         if(matchMenus.length > 0) {
             let activeKey = `newTab${this.newTabIndex++}`;
             this.setState((prevState) => {
@@ -181,9 +188,9 @@ class MyLayout extends React.Component {
                     <HeaderCustom toggle={this.toggle}
                                   pageRoutes={this.state.pageRoutes}
                                   collapsed={this.state.collapsed}
-                                  user={this.state.auth.user || {}}/>
+                                  user={this.state.user || {}}/>
                     <Content style={{overflow: 'initial', flex: '1 1 0'}}>
-                        {/*<Routes auth={this.state.auth}/>*/}
+                        {/*<Routes user={this.state.user}/>*/}
 
                         <Tabs
                             onChange={this.onChange}

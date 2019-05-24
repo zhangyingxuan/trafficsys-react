@@ -63,7 +63,7 @@ class MenuTree extends React.Component {
                     let titleSubNode = <span className="menu-item-row"><span className="menu-item-title">{permissionSubItem.title}</span>{deleteNode}</span>
                     // icon={<Icon type={permissionItem.icon}/>}
                     return <TreeNode title={titleSubNode}
-                                     key={permissionSubItem.id}/>
+                                     key={permissionSubItem.title}/>
                 })
             }
 
@@ -74,7 +74,7 @@ class MenuTree extends React.Component {
             return (
                 <TreeNode icon={<Icon type={permissionItem.icon}/>}
                           title={titleNode}
-                          key={permissionItem.id}>
+                          key={permissionItem.title}>
                     {ChildList}
                 </TreeNode>
             )
@@ -83,7 +83,7 @@ class MenuTree extends React.Component {
 
 
     deepSearchSelectedTreeItem(permissionList, treeItemTitle) {
-        if(permissionList == null || permissionList == undefined){
+        if(permissionList === null || permissionList === undefined){
             return null
         }
 
@@ -102,8 +102,6 @@ class MenuTree extends React.Component {
     }
 
     handleSelectTreeItem(selectedKeys, e) {
-        console.log(e)
-
         let permissionList = this.props.permissionList
         let selectedTree = this.deepSearchSelectedTreeItem(permissionList, selectedKeys[0])
         // console.log(selectedKeys)

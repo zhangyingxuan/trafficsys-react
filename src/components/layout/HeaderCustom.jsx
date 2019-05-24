@@ -3,8 +3,7 @@
  */
 import React, {Component} from 'react';
 import {Menu, Icon, Layout, PageHeader, Row, Col} from 'antd';
-import {withRouter} from 'react-router-dom';
-
+import {NavLink, withRouter} from 'react-router-dom';
 const {Header} = Layout;
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
@@ -54,7 +53,7 @@ class HeaderCustom extends Component {
                     <Col span={13}>
                         <PageHeader breadcrumb={ this.props.pageRoutes }
                             // title={this.state.title}
-                            // onBack={this.handleBack.bind(this)}
+                            onBack={this.handleBack.bind(this)}
                             // subTitle="This is a subtitle"
                         />
                     </Col>
@@ -70,7 +69,11 @@ class HeaderCustom extends Component {
                                     <Menu.Item key="logout"><span onClick={this.logout}>退出登录</span></Menu.Item>
                                 </MenuItemGroup>
                                 <MenuItemGroup title="设置中心">
-                                    <Menu.Item key="setting:3">个人设置</Menu.Item>
+                                    <Menu.Item key="setting:3">
+                                        <NavLink to={"/app/personalCenter"}>
+                                            个人设置
+                                        </NavLink>
+                                    </Menu.Item>
                                     <Menu.Item key="setting:4">系统设置</Menu.Item>
                                 </MenuItemGroup>
                             </SubMenu>

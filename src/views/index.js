@@ -2,12 +2,11 @@
  * 路由组件出口文件
  * yezi 2018年6月24日
  */
-import React from 'react';
-
 import Dashboard from './dashboard';
 import MenuList from './settings/MenuList';
 import RoleList from './settings/RoleList';
 import UserList from './settings/UserList';
+import PersonalCenter from './settings/PersonalCenter';
 
 // const Dashboard = React.lazy(() => import('./dashboard'));
 // const Login = React.lazy(() => import('./login/Login1.js'));
@@ -21,4 +20,5 @@ export default {
     MenuList,
     RoleList,
     UserList,
+    PersonalCenter
 }
