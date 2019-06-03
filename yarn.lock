@@ -3843,6 +3843,14 @@ ecc-jsbn@~0.1.1:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
 
+echarts-for-react@^2.0.15-beta.0:
+  version "2.0.15-beta.0"
+  resolved "https://registry.npmjs.org/echarts-for-react/-/echarts-for-react-2.0.15-beta.0.tgz#dbf30b66bfcc8b1cb9f889eb3ec59a8b1363c3d6"
+  integrity sha512-brgogznteCirkvOvl/ZOozkpvBt612LBtDiSGE/pANTIO2+YyGpNfFXAIjEIDAY6yTvgdj+Ei7JISAfflXEn5Q==
+  dependencies:
+    fast-deep-equal "^2.0.1"
+    size-sensor "^0.2.0"
+
 echarts@^4.2.1:
   version "4.2.1"
   resolved "https://registry.npmjs.org/echarts/-/echarts-4.2.1.tgz#9a8ea3b03354f86f824d97625c334cf16965ef03"
@@ -10252,6 +10260,11 @@ sisteransi@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/sisteransi/-/sisteransi-1.0.0.tgz#77d9622ff909080f1c19e5f4a1df0c1b0a27b88c"
   integrity sha512-N+z4pHB4AmUv0SjveWRd6q1Nj5w62m5jodv+GD8lvmbY/83T/rpbJGZOnK5T149OldDj4Db07BSv9xY4K6NTPQ==
+
+size-sensor@^0.2.0:
+  version "0.2.4"
+  resolved "https://registry.npmjs.org/size-sensor/-/size-sensor-0.2.4.tgz#93f7b3a8a8582967a1ae782c5ae39ae1dbb7368d"
+  integrity sha512-HClRjgxoco4IV3UaMYfzhP+xssA4bD/4bm8bFUH55K2AmjplwWlWZCFnSjkBoN35JdD1kKbOpyf9df+DZspdOA==
 
 slash@^1.0.0:
   version "1.0.0"

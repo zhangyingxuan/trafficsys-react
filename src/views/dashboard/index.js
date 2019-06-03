@@ -1,5 +1,6 @@
 import React from 'react'
-import BaiduMap from '../../components/map/BaiduMap'
+// import BaiduMap from '../../components/map/BaiduMap'
+import BaiduMap from '../../components/map/BaiduMapReact2'
 //首先引入组件
 import echarts from 'echarts/lib/echarts';
 import 'echarts/lib/chart/bar'

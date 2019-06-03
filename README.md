@@ -1,68 +1,40 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 项目介绍 react全家桶
+## 技术栈：react16 + react-redux + react-router + axios + antd
 
-## Available Scripts
+## 网络
+###  一、axios + mockjs  模拟接口返回数据  
+mockjs开关位于 src根目录下 index.js
 
-In the project directory, you can run:
+### 二、跨域问题处理，代理接口地址设置
+src根目录下 setupProxy.js 文件
 
-### `npm start`
+## 百度地图
+1.引入方式：public/index.html 中加入下行代码，其中ak为我个人申请序列号，可自行申请替换
+```
+<script src="http://api.map.baidu.com/api?v=3.0&ak=jhuf5wAODpCxxugey97p7pzxdBvqMdiB"></script>
+```
+2.你也可以使用异步加载百度地图js方式  
+[异步加载百度地图](./src/components/map/BaiduMapReact.js)  
+注意：引入必须在页面渲染完成后再进行异步获取百度js脚本，既componentDidMount过程。
+
+## 项目启动（nodejs 8.X）
+
+### 第一步：初次检出该项目，需安装依赖包（如已执行过该步骤，则跳过）
+```npm install```  
+
+注：项目根目录下（traffic-react）执行
+
+## 第二步：启动项目
+```npm start```    
+
+注：项目根目录下（traffic-react）执行
 
 Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:2000](http://localhost:3000) to view it in the browser.<br>
+如需修改端口号，可修改 .env文件中 PORT字段。
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
 
-### `npm test`
+## 第三步：打包项目
+```npm run build```  
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+注：项目根目录下（traffic-react）执行
